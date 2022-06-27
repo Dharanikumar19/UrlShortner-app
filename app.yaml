@@ -1,0 +1,2 @@
+service: my-second-app
+runtime: nodejs16
