@@ -40,6 +40,29 @@ app.post("/create", (req,res) => {
     })
 })
 
+app.get("/update/:id", (req,res) => {
+    UrlModel.findOneAndUpdate({_id : req.params.id},req.body, {new : true},(err, updData)=>{
+        if(err) throw err
+       res.render("update", { urlData : updData})
+    })
+} )
+
+app.post("/update/:id", (req,res) => {
+    UrlModel.findByIdAndUpdate({_id : req.params.id},req.body,(err, updData)=>{
+        if(err) throw err
+        res.redirect("/")
+    })
+} )
+
+
+
+app.get("/delete/:id", (req,res) => {
+        UrlModel.findByIdAndDelete({_id : req.params.id},(err, delData)=>{
+            if(err) throw err
+            res.redirect("/")
+        })
+} )
+
 function generateUrl() {
     let random = ''
     let characters = "ABCDEFRGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
