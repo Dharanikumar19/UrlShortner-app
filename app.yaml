@@ -1,2 +1,2 @@
-service: my-urlshortner-app
+service: my-second-app
 runtime: nodejs16
