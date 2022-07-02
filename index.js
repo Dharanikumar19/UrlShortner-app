@@ -66,7 +66,6 @@ app.get("/update/:name", async (req, res) => {
 app.post("/update/:name", async (req, res) => {
     const m = { name: req.params.name }
     let name = m.name
-    console.log(name)
     const taskKey = datastore.key([kind, name]);
 
     const entity = {
