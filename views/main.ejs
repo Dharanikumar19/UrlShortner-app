@@ -33,24 +33,28 @@
         </form>
        </div>
 
+
          <div class="row">
-        <% for(let i=0; i< urlData?.length; i++) {%>
+        <% for(let i=0; i< entity?.length; i++) {%>
             <div class="col-lg-12 mt-3">
                 <div class="card text-bg-light border-dark mb-3" style="max-width: 100%;">
                     <div class="card-body">
-                      <p class="card-title">Long Url : <%= urlData[i].longUrl %></p><br/>
-                      <span>Short Url : </span><a class="card-text" href="<%= urlData[i].longUrl %>" target="_blank">http://<%= urlData[i].shortUrl %> </a>
+                      <p class="card-title">Long Url : <%= entity[i].longUrl %></p><br/>
+                      <span>Short Url : </span><a class="card-text" href="<%= entity[i].longUrl %>" target="_blank">http://<%= entity[i].shortUrl %> </a>
                     </div>
                    <div style="padding:0 10px 10px 12px">
 
-                    <a href="/update/<%= urlData[i].id %>" class="btn btn-sm btn-warning">Update</a>
-                  <a href="/delete/<%= urlData[i].id %>"  class="btn btn-sm btn-danger">Delete</a>
+                  <a href="/update/<%= entity[i].name %>" class="btn btn-sm btn-warning">Update</a>
+                    
+                  <a href="/delete/<%= entity[i].name %>"  class="btn btn-sm btn-danger">Delete</a>
+                   
                    </div>
-                  </div>
-                  
+                  </div>  
             </div>   
        <% } %>
          </div>
+
+
     </div>
 </body>
 </html>

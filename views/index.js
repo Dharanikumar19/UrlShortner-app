@@ -58,7 +58,7 @@ app.get("/update/:name", async (req, res) => {
     let name = m.name
     const key = datastore.key([kind, name]);
     const [entities] = await datastore.get(key);
-    entities.name = entities[Datastore.KEY].name;    
+    
     res.render("update", { urlData : entities})
 })
 
@@ -83,6 +83,21 @@ app.post("/update/:name", async (req, res) => {
 })
 
 
+
+
+// app.get("/update/:id", (req,res) => {
+//     UrlModel.findOneAndUpdate({_id : req.params.id},req.body, {new : true},(err, updData)=>{
+//         if(err) throw err
+//        res.render("update", { urlData : updData})
+//     })
+// } )
+
+// app.post("/update/:id", (req,res) => {
+//     UrlModel.findByIdAndUpdate({_id : req.params.id},req.body,(err, updData)=>{
+//         if(err) throw err
+//         res.redirect("/")
+//     })
+// } )
 
 app.get("/delete/:name", async (req, res) => {
 
