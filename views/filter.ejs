@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <title>Url Shortener</title>
+
+    <style>
+        .card-title {
+             color: black;
+             text-decoration: none;
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <div class="row">
+            <div class="col-lg-12 text-center mt-2">
+                <h2>Url Shortener App</h2>
+            </div>
+        </div>
+
+       <div class="row">
+        <form action="/create" method="POST">
+            <div class="input-group mb-3">
+                <input type="text" name="longUrl" class="form-control border-dark" placeholder="Place your long URL here" aria-label="Recipient's username" aria-describedby="button-addon2">
+                <button class="btn btn-primary" type="submit" value="Submit" id="button-addon2">Submit</button>
+              </div>
+        </form>
+       </div>
+   
+       <a type="button" href="/"><button>Back to home</button></a>
+
+
+       <% if(filterDataByAssending){ %>
+        <div class="row">
+            <% for(let i=0; i< filterDataByAssending?.length; i++) {%>
+                <div class="col-lg-12 mt-3">
+                    <div class="card text-bg-light border-dark mb-3" style="max-width: 100%;">
+                        <div class="card-body">
+                          <p class="card-title">Long Url : <%= filterDataByAssending[i].longUrl %></p>
+                          <span>Short Url : </span><a class="card-text" href="<%= filterDataByAssending[i].longUrl %>" target="_blank">http://<%= filterDataByAssending[i].shortUrl %> </a>
+                          <p class="mt-2"> Created At : <%= new Date(filterDataByAssending[i].created).toLocaleString() %></p>
+                        </div>
+                        <div style="padding:0 10px 10px 12px">
+
+                          <a href="/update/<%= filterDataByAssending[i].name %>" class="btn btn-sm btn-warning">Update</a>
+                            
+                          <a href="/delete/<%= filterDataByAssending[i].name %>"  class="btn btn-sm btn-danger">Delete</a>
+                           
+                           </div>
+                      </div>  
+                </div>   
+              
+           <% } %>
+          </div>
+            
+      <% } else if (filterDataByDessending){ %>  
+        <div class="row">
+            <% for(let i=0; i< filterDataByDessending?.length; i++) {%>
+                <div class="col-lg-12 mt-3">
+                    <div class="card text-bg-light border-dark mb-3" style="max-width: 100%;">
+                        <div class="card-body">
+                          <p class="card-title">Long Url : <%= filterDataByDessending[i].longUrl %></p>
+                          <span>Short Url : </span><a class="card-text" href="<%= filterDataByDessending[i].longUrl %>" target="_blank">http://<%= filterDataByDessending[i].shortUrl %> </a>
+                          <p class="mt-2"> Created At : <%= new Date(filterDataByDessending[i].created).toLocaleString() %></p>
+                        </div>
+                        <div style="padding:0 10px 10px 12px">
+
+                          <a href="/update/<%= filterDataByDessending[i].name %>" class="btn btn-sm btn-warning">Update</a>
+                            
+                          <a href="/delete/<%= filterDataByDessending[i].name %>"  class="btn btn-sm btn-danger">Delete</a>
+                           
+                           </div>
+                      </div>  
+                </div>   
+              
+           <% } %>
+          </div>
+
+     <% } else if (filterDataByDate){ %>  
+      <div class="row">
+          <% for(let i=0; i< filterDataByDate?.length; i++) {%>
+              <div class="col-lg-12 mt-3">
+                  <div class="card text-bg-light border-dark mb-3" style="max-width: 100%;">
+                      <div class="card-body">
+                        <p class="card-title">Long Url : <%= filterDataByDate[i].longUrl %></p>
+                        <span>Short Url : </span><a class="card-text" href="<%= filterDataByDate[i].longUrl %>" target="_blank">http://<%= filterDataByDate[i].shortUrl %> </a>
+                        <p class="mt-2"> Created At : <%= new Date(filterDataByDate[i].created).toLocaleString() %></p>
+                      </div>
+                      <div style="padding:0 10px 10px 12px">
+
+                        <a href="/update/<%= filterDataByDate[i].name %>" class="btn btn-sm btn-warning">Update</a>
+                          
+                        <a href="/delete/<%= filterDataByDate[i].name %>"  class="btn btn-sm btn-danger">Delete</a>
+                         
+                         </div>
+                    </div>  
+              </div>   
+            
+         <% } %>
+        </div>
+   <% } %>
+
+
+    </div>
+</body>
+</html>

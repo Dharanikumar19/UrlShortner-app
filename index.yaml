@@ -1,0 +1,11 @@
+indexes:
+- kind: Url-task
+  properties:
+  - name: priority
+  - name: created
+
+- kind : Url-task
+  properties : 
+    - name : done
+    - name : created
+    
