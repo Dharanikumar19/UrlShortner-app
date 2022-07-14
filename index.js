@@ -19,6 +19,49 @@ app.set("view engine", "ejs")
 app.use(express.urlencoded({ extended: true }))
 
 
+const { CloudTasksClient } = require('@google-cloud/tasks');
+
+// Instantiates a client.
+const client = new CloudTasksClient();
+
+async function createHttpTask(name) {
+
+  const project = "teleport-gcp-playground";
+  const queue = "my-queue";
+  const location = "us-central1";
+  const url = `http://localhost:8080/delete/${name}`;
+//   const payload = 'Hello World!';
+  const inSeconds = 20;
+
+  // Construct the fully qualified queue name.
+  const parent = client.queuePath(project, location, queue);
+
+  const task = {
+    httpRequest: {
+      httpMethod: 'GET',
+      url,
+    },
+  };
+
+//   if (payload) {
+//     task.httpRequest.body = Buffer.from(payload).toString('base64');
+//   }
+
+  if (inSeconds) {
+    task.scheduleTime = {
+      seconds: inSeconds 
+    };
+  }
+
+  // Send create task request.
+  console.log('Sending task:');
+  console.log(task);
+  const request = {parent: parent, task: task};
+  const [response] = await client.createTask(request);
+  console.log(`Created task ${response.name}`);
+}
+
+
 
 
 app.get("/", async (req, res) => {
@@ -28,29 +71,57 @@ app.get("/", async (req, res) => {
         item.name = item[Datastore.KEY].name;
         return item;
     });
-    // console.log(entity)
 
     res.render('main', { entity })
 })
 
 
 
-
 app.post("/create", async (req, res) => {
 
-    const taskKey = datastore.key([kind, uuidv4()])
+    const query = datastore.createQuery('Url-task')
+    const [entities] = await datastore.runQuery(query);
+    
+    const isUrlFound = entities.some(async element => {
+        if (element.longUrl == req.body.longUrl) {
+            element.name = element[Datastore.KEY].name;
+            console.log(element.name)
+            createHttpTask(element.name); 
 
-    const urlTask = {
-        key: taskKey,
-        data: {
-            created: new Date(),
-            longUrl: req.body.longUrl,
-            shortUrl: generateUrl(),
-            done : false
+            const taskKey = datastore.key([kind, uuidv4()])
+        const urlTask = {
+            key: taskKey,
+            data: {
+                created: new Date(),
+                longUrl: req.body.longUrl,
+                shortUrl: generateUrl(),
+                done: false,
+                priority: 5
+            }
         }
-    }
-    await datastore.save(urlTask);
-    res.redirect("/")
+        await datastore.save(urlTask);
+        res.redirect("/")
+
+        }else{
+            const taskKey = datastore.key([kind, uuidv4()])
+            const urlTask = {
+                key: taskKey,
+                data: {
+                    created: new Date(),
+                    longUrl: req.body.longUrl,
+                    shortUrl: generateUrl(),
+                    done: false,
+                    priority: 5
+                }
+            }
+            console.log("new url created")
+            await datastore.save(urlTask);
+            res.redirect("/")
+        }
+       
+    });
+    
+
 })
 
 
@@ -72,10 +143,11 @@ app.post("/update/:name", async (req, res) => {
         data: {
             created: new Date(),
             longUrl: req.body.longUrl,
-            shortUrl: generateUrl()
+            shortUrl: generateUrl(),
+            done: false,
+            priority: 5
         }
     };
-
     await datastore.update(entity);
     res.redirect("/")
 })
@@ -83,9 +155,9 @@ app.post("/update/:name", async (req, res) => {
 
 
 app.get("/delete/:name", async (req, res) => {
+   console.log("url deleted")
+    const taskKey = datastore.key([kind, req.params.name]); 
 
-    const taskKey = datastore.key([kind, req.params.name]);
-    
     await datastore.delete(taskKey);
     res.redirect("/")
 })
@@ -93,14 +165,14 @@ app.get("/delete/:name", async (req, res) => {
 
 app.get("/filterAssending", async (req, res) => {
     const query = datastore.createQuery('Url-task').order('created', {
-        assending : true,
+        assending: true,
     });
     const [filterData] = await datastore.runQuery(query);
     const filterDataByAssending = filterData.map(item => {
         item.name = item[Datastore.KEY].name;
         return item;
     });
-    res.render("filter", {filterDataByAssending, filterDataByDessending : null, filterDataByData:null })
+    res.render("filter", { filterDataByAssending, filterDataByDessending: null, filterDataByData: null })
 })
 
 app.get("/filterDescending", async (req, res) => {
@@ -112,21 +184,22 @@ app.get("/filterDescending", async (req, res) => {
         item.name = item[Datastore.KEY].name;
         return item;
     });
-    res.render("filter", {filterDataByDessending, filterDataByAssending : null, filterDataByData:null })
+    res.render("filter", { filterDataByDessending, filterDataByAssending: null, filterDataByData: null })
 })
 
 
 
 app.get("/filterbyDate", async (req, res) => {
     const query = datastore.createQuery('Url-task').filter('created', '>', new Date('2022-07-04T20:00:00z'))
-    .filter('created', '<', new Date('2022-07-07T20:00:00z')).filter('done', '=', false).filter('priority', '=', 4)
+        .filter('created', '<', new Date('2022-07-07T20:00:00z')).filter('done', '=', false).filter('priority', '=', 4)
     const [filterData] = await datastore.runQuery(query);
     const filterDataByDate = filterData.map(item => {
         item.name = item[Datastore.KEY].name;
         return item;
     });
-    res.render("filter", {filterDataByDate, filterDataByAssending : null , filterDataByDessending : null})
+    res.render("filter", { filterDataByDate, filterDataByAssending: null, filterDataByDessending: null })
 })
+
 
 app.get("/filterbyPriority", async (req, res) => {
     const query = datastore.createQuery('Url-task').filter('priority', '=', 3).filter('created', '<', new Date('2022-07-05T00:00:00z'));
@@ -135,8 +208,8 @@ app.get("/filterbyPriority", async (req, res) => {
         item.name = item[Datastore.KEY].name;
         return item;
     });
-    
-    res.render("filter", {filterDataByDate, filterDataByAssending : null , filterDataByDessending : null})
+
+    res.render("filter", { filterDataByDate, filterDataByAssending: null, filterDataByDessending: null })
 })
 
 
